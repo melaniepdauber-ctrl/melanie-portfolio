@@ -26,13 +26,31 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
-        working-directory: MelaniePortfolio
+      # Auto-detect where package.json lives and build there
+      - name: Install dependencies and build
+        run: |
+          set -e
 
-      - name: Build
-        run: npm run build
-        working-directory: MelaniePortfolio
+          echo "=== Searching for package.json within repo ==="
+          FILE=$(find . -maxdepth 3 -type f -name "package.json" | head -n 1 || true)
+
+          if [ -z "$FILE" ]; then
+            echo "❌ No package.json found within 3 levels of repo root."
+            echo "Repo contents:"
+            ls -R .
+            exit 1
+          fi
+
+          echo "✅ Found package.json at: $FILE"
+          BASE_DIR=$(dirname "$FILE")
+          echo "Using BASE_DIR=$BASE_DIR"
+
+          # Save for later steps
+          echo "BASE_DIR=$BASE_DIR" >> "$GITHUB_ENV"
+
+          cd "$BASE_DIR"
+          npm install
+          npm run build
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -40,7 +58,8 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: MelaniePortfolio/dist/public
+          # Use the directory where we built
+          path: ${{ env.BASE_DIR }}/dist/public
 
   deploy:
     needs: build
