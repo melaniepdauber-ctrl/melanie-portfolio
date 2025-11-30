@@ -28,11 +28,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: MelaniePortfolio
 
       - name: Build
         run: npm run build
-        working-directory: MelaniePortfolio
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
@@ -40,7 +38,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: MelaniePortfolio/dist/public
+          path: dist/public
 
   deploy:
     needs: build
