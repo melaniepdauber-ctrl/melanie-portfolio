@@ -2,7 +2,7 @@ name: Deploy portfolio to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 permissions:
@@ -30,9 +30,12 @@ jobs:
         run: npm install
         working-directory: MelaniePortfolio
 
-      - name: Build site
+      - name: Build
         run: npm run build
         working-directory: MelaniePortfolio
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
